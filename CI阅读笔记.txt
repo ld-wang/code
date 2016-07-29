@@ -1,0 +1,497 @@
+1 load_class()  函数 前 用 地址符& ？
+
+php规定通过$a=&test(); 方式得到的才是函数的引用返回.  一般搭配静态变量使用 ，(非静态变量 改变后 无法检测到 无意义)
+
+
+2 preg_replace（函数）  不错的思想 预防替换后还存在
+		do
+		{
+			$str = preg_replace($non_displayables, '', $str, -1, $count);
+		}while ($count);
+
+3 cli 模式  commond line interface 命令行接口
+  PHP_SAPI === 'cli' ? 来判断    //常见的SAPI有：cgi 、fast-cgi、cli、isapi、apache 模块的 DLL
+
+4 数组填充
+
+	array range ( mixed $low , mixed $high [, number $step ] ) 建立一个包含指定范围单元的数组 
+	eg range('a','z')  range(1,15)
+	array array_fill ( int $start_index , int $num , mixed $value ) — 用给定的值填充数组
+	array array_pad ( array $input , int $pad_size , mixed $pad_value )— 用值将数组填补到指定长度 
+	array array_fill_keys ( array $keys , mixed $value )使用 value 参数的值作为值，使用 keys 数组的值作为键来填充一个数组。 
+
+
+
+4 数组函数-类似循环
+	array array_filter ( array $array [, callable $callback [, int $flag = 0 ]] )	用回调函数过滤数组中的单元
+	array_map ( callable $callback , array $arr1 [, array $... ] ) 将回调函数作用到给定数组的单元上
+	array_reduce( array $input , callable $function [, mixed $initial = NULL ] )用回调函数迭代地将数组简化为单一的值
+	array_walk(array &$array , callable $funcname [, mixed $userdata = NULL ] )使用用户自定义函数对数组中的每个元素做回调处理
+
+5 添加到 $_SERVER 数组方法
+
+ apache  setenv   eg SetEnv SPECIAL_PATH /foo/bin
+ nginx 配置文件   fastcgi_param key 'value'   注意位置: 写在 params 里消耗资源过大
+
+6 suhosin 扩展  Suhosin是一个PHP程序的保护系统   (禁用函数列表)
+
+7 magic_quotes_runtime  和 magic_quotes_gpc(5.4已经移除)
+
+	gpc(get,post,cookie)
+
+	magic_quotes_runtime
+	此函数是该函数的别名： set_magic_quotes_runtime() 
+	作用范围：从文件中读取的数据或执行exec()的结果或是从SQL查询中得到的；
+	作用时间：每次当脚本访问运行状态中产生的数据。
+
+	由此我们可以看出：
+	magic_quotes_gpc的设定值将会影响通过GET、POST 和 COOKIE获得的数据
+	magic_quotes_runtime的设定值将会影响从文件中读取的数据或从数据库查询得到的数据
+
+8 $GLOBALS 数组里含有 已定义的所有全局变量
+  比如 $a=5;
+  如果 $a 是全局变量  则$a 在$GLOBALS数组里存在 $GLOBALS['a']=5
+
+9 错误异常处理 自定义函数
+	set_error_handler('_error_handler');//用户自定义的错误处理函数
+	set_exception_handler('_exception_handler');//设置一个用户定义的异常处理函数。
+	register_shutdown_function('_shutdown_handler');//当我们的脚本执行完成或意外死掉导致PHP执行即将关闭时,我们的这个函数将会 被调用
+
+10 extract()     extract — 从数组中将变量导入到当前的符号表
+	$my_array = array("a" => "Cat","b" => "Dog", "c" => "Horse");
+	extract($my_array);
+	//result: $a='cat'    $b="Dog"   $c="Horse"
+ 
+11  microtime(true)  注意参数  true时: xxxxx.xxxx   false时   xxxx  xxxxx (毫秒 秒)
+
+12  $this->config->load()   可加载多个配置文件    支持区分开发环境 目录在 config 和 ENVIRONMENT/config   优先检测config目录
+
+13 isset($a,$b,$c)   可检测多个变量
+   unset($a,$b,$c)   可同时销毁多个变量
+
+14  URI 和 URL 区别
+
+	URL通常是可以直接访问的，如HTTP地址，FTP地址等，强调定位，通常标志一个网络路径。
+	URI是一个资源标识符，如mail:admin@qq.com,dblink等，强调标志，这个不一定是网络路径。
+
+
+15  hooks 用法 ？ 待实践
+    auto  composer ?
+    浏览器的缓存  header  :expire  ?
+    php.ini   sess_expire_on_close
+
+
+16		echo strlen('我爱你');    //9
+		echo strlen('我爱你abc');  //12
+		
+		echo mb_strlen('我爱你');  //3
+		echo mb_strlen('我爱你abc'); //6
+
+		echo iconv_strlen('我爱你');//3
+		echo iconv_strlen('我爱你abc');//6
+
+17 crypt()  单向字符串散列 返回一个基于标准 UNIX DES 算法或系统上其他可用的替代算法的散列字符串。可选 盐值
+
+18 trigger_error( string $error_msg [, int $error_type = E_USER_NOTICE ])  触发一个错误
+
+19	ASCII  互补函数
+	chr()  从指定的 ASCII 值返回字符 SCII 值可被指定为十进制值、八进制值(前置 0 eg chr(061))或十六进制值(前置 0x eg chr(0x61))。
+	ord()  返回字符的 ASCII (美国国家标准交换码) 序数值 
+
+20 password_hash() 创建密码的哈希（hash）   生成的动态变化 只能用password_verify() 验证  虽然更安全 ，但是降低了互动性 不可用其他语言验证\
+
+21 array_column( array $input , mixed $column_key [, mixed $index_key ] )  (PHP 5 >= 5.5.0, PHP 7)  从多维数组中返回单列数组  可用其他列当键值 
+
+   对于 mysql取出的结构化数据 操作方便 
+
+	$records = array(
+		array(
+			'id' => 2135,
+			'first_name' => 'John',
+			'last_name' => 'Doe',
+		)
+	);
+	$last_names = array_column($records, 'last_name', 'id');    // $last_names =   array(2135=>'Doe')
+
+22  注意函数区别
+    array_replace_recursive( array $array1 , array $array2 [, array $... ])使用传递的数组递归替换第一个数组的元素
+
+	使用后面数组元素的值替换数组 array1 的值。 如果一个键存在于第一个数组同时也存在于第二个数组，它的值将被第二个数组中的值替换。 如果一个键存在于第二个数组，但是不存在于第一个数组，则会在第一个数组中创建这个元素。 如果一个键仅存在于第一个数组，它将保持不变。 如果传递了多个替换数组，它们将被按顺序依次处理，后面的数组将覆盖之前的值。
+	array_replace_recursive() 是递归的：它将遍历数组并将相同的处理应用到数组的内部值。
+
+	如果数组 array1 中的值是标量，它的值将被第二个数组 array2 中的值替换，它可能是一个标量或者数组。如果 array1 和 array2 中的值都是数组，array_replace_recursive() 函数将递归地替换它们各自的值。
+
+    array_replace( array $array1 , array $array2 [, array $... ] )   使用传递的数组替换第一个数组的元素
+
+	函数使用后面数组元素相同 key 的值替换 array1 数组的值。如果一个键存在于第一个数组同时也存在于第二个数组，它的值将被第二个数组中的值替换。如果一个键存在于第二个数组，但是不存在于第一个数组，则会在第一个数组中创建这个元素。如果一个键仅存在于第一个数组，它将保持不变。如果传递了多个替换数组，它们将被按顺序依次处理，后面的数组将覆盖之前的值。
+
+	array_replace() 是非递归的：它将第一个数组的值进行替换而不管第二个数组中是什么类型。
+ 
+23  array_slice( array $array , int $offset [, int $length = NULL [, bool $preserve_keys = false ]] )  数组取元素  类似与 字符串的 substr()
+
+24  了解 $SERVER 中 
+ 
+	REQUEST_URI    访问此页面所需的URI	(获取域名后的所有的字符 包含 /)	
+	QUERY_STRING   查询(query)的字符串 (获取的是?后面的字符)
+	SCRIPT_NAME    包含当前脚本的路径(获取域名后的字符 到 .php (或 . 如最后为a.php/b.  则到b.结束 含.) 结束 )		
+	PHP_SELF	   当前正在执行脚本的文件名(获取域名后 问号前的值)
+
+	http://localhost/aaa/index.php/a.php?p=222&q=333
+	结果：
+	
+	$_SERVER['REQUEST_URI']  = "/aaa/index.php/a.php?p=222&q=333";
+	$_SERVER['QUERY_STRING'] = "p=222&q=333";
+	$_SERVER['SCRIPT_NAME']  = "/aaa/index.php";
+	$_SERVER['PHP_SELF']     = "/aaa/index.php/a.php";
+
+	--SCRIPT_NAME与__FILE__
+	是指当前执行的文件 而__FILE__是指当前文件（如a.php中有__FILE__，但被b.php include且执行b.php，此时__FILE__为a.php, SCRIPT_NAME为b.php）
+
+25 cli模式下的  argv    argc    $argc 保存着$argv的长度.
+
+26  && 和 and     || 和 or
+
+	因为赋值运算的优先级比AND和OR的高，所以先赋值；比&&和||的低，所以逻辑运算符先执行，先逻辑运算，再赋值。
+
+27  array explode ( string $separator , string $string [, int $limit ] )  
+	注意第三个参数 如果设置了 limit 参数，则返回的数组包含最多 limit 个元素 
+	如果 limit 参数是负数，则返回除了最后的 -limit 个元素外的所有元素。此特性是 PHP 5.1.0 中新增的。
+
+28  sscanf(string $str , string $format [, mixed &$first ,$last... ])
+    根据指定格式解析$format 输入的字符$str
+    如果仅传入了两个参数给这个函数，解析后将返回一个数组，否则，如果可选参数被传入，这个函数将返回被设置了值的个数
+	
+
+29 
+	lcfirst() — 使一个字符串的第一个字符小写
+	ucfirst() - 将字符串的首字母转换为大写
+	strtolower() - 将字符串转化为小写
+	strtoupper() - 将字符串转化为大写
+	ucwords() - 将字符串中每个单词的首字母转换为大写
+
+30 object里 method函数
+	
+	 get_class_methods ( mixed $class_name ) 返回由类的方法名组成的数组
+	 method_exists( mixed $object , string $method_name ) 检查类的方法是否存在
+
+	get_class() - 返回对象的类名
+	get_class_vars() - 返回由类的默认属性组成的数组
+	get_object_vars() - 返回由对象属性组成的关联数组
+
+
+
+31 bool class_exists ( string $class_name [, bool $autoload = true ] )  class_exists — 检查类是否已定义  如果已定义默认自动加载
+
+32
+	strrpos() — 计算指定字符串在目标字符串中最后一次出现的位置
+	strpos() - 查找字符串首次出现的位置
+	stripos() - 查找字符串首次出现的位置（不区分大小写）
+	strripos() - 计算指定字符串在目标字符串中最后一次出现的位置（不区分大小写）
+	strstr() - 返回 字符串第一次出现的位置开始到结尾的字符串 (不含查找字符串)
+
+33
+	array_shift — 将数组开头的单元移出数组
+	array_unshift() - 在数组开头插入一个或多个单元
+	array_push() - 将一个或多个单元压入数组的末尾（入栈）
+	array_pop() - 将数组最后一个单元弹出（出栈）
+
+34 instanceof 检查 对象 是否为某个类的 实例
+
+	$obj = new A();
+
+	if ($obj instanceof A) {
+	   echo 'obj = new A()';
+	}
+
+	注: 当该类 实现一个 interface  那么 实例化对象 instanceof interface 总是 return true
+
+	interface ExampleInterface{
+		public function interfaceMethod(){}
+	}
+
+	class ExampleClass implements ExampleInterface{
+		public function interfaceMethod(){
+			echo 'i am fine';
+		}
+	}
+
+	$newobj = new ExampleClass();
+
+	$newobj instanceof ExampleInterface  返回 true
+
+
+
+35 
+	is_numeric：检测是否为数字字符串，可为负数和小数 
+	ctype_digit：检测字符串中的字符是否都是数字，负数和小数会检测不通过 
+
+36  /dev/random和/dev/urandom是Linux系统中提供的随机伪设备,这两个设备的任务,是提供永不为空的随机字节数据流
+
+37  bin2hex() 函数把 ASCII 字符的字符串转换为十六进制值。字符串可通过使用 pack() 函数再转换回去。
+	$str = "Shanghai";
+	echo bin2hex($str) ;
+	echo pack("H*",bin2hex($str)) ;
+
+38 数组指针操作函数
+
+	current() - 返回数组中的当前指针单元   
+	end() - 将数组的内部指针指向最后一个单元
+	key() - 从关联数组中取当前指针对应键名
+	each() - 返回数组中当前的键／值对并将数组指针向前移动一步
+	prev() - 将数组的内部指针倒回一位
+	reset() - 将数组的内部指针 指向第一个单元
+	next() - 将数组中的内部指针向前移动一位
+
+40  php 5.4 以上始终返回False
+	get_magic_qutoes_gpc()   
+  	get_magic_qutoes_runtime()
+
+  	magic_quotes_sybase 是否开启仅处理单引号 5.4 移除
+  	
+41 rawurldecode() 不会把加号（'+'）解码为空格，而 urldecode() 可以。
+
+42 php 验证 ajax请求
+
+ !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest')
+
+43  filter_var(); 使用特定的过滤器过滤一个变量
+	filter_var_array() - 获取多个变量并且过滤它们
+	filter_input() - 通过名称获取特定的外部变量，并且可以通过过滤器处理它
+	filter_input_array() - 获取一系列外部变量，并且可以通过过滤器处理它们
+
+    filter_list() 可查看过滤器列表
+
+    常用 IP过滤器	FILTER_FLAG_IPV4/FILTER_FLAG_IPV6
+         Email过滤器  FILTER_VALIDATE_EMAIL
+         URL过滤器    FILTER_VALIDATE_URL
+
+44   bool setcookie ( string $name [, string $value = "" [, int $expire = 0 [, string $path = "" [, string $domain = "" [, bool $secure = false [, bool $httponly = false ]]]]]] )
+	
+	$secure  仅https 访问   $httponly 仅http 访问 其他如js 均不可 although it is not supported by all browsers
+   
+   PHP 手册 set to 0, or omitted, the cookie will expire at the end of the session (when the browser closes). 
+
+
+45  parse( string $str [, array &$arr ] )   将字符串解析成多个变量
+
+	$str = "first=value&arr[]=foo+bar&arr[]=baz";
+	parse_str($str);
+	echo $first;  // value
+	echo $arr[0]; // foo bar
+	echo $arr[1]; // baz
+
+	parse_str($str, $output);
+	echo $output['first'];  // value
+	echo $output['arr'][0]; // foo bar
+	echo $output['arr'][1]; // baz
+
+	parse_url ( string $url [, int $component = -1 ] )本函数解析一个 URL 并返回一个关联数组，包含在 URL 中出现的各种组成部分。 
+	指定 PHP_URL_SCHEME、 PHP_URL_HOST、 PHP_URL_PORT、 PHP_URL_USER、 PHP_URL_PASS、 PHP_URL_PATH、 PHP_URL_QUERY 或 PHP_URL_FRAGMENT 的其中一个来获取 URL 中指定的部分的 string。 （除了指定为 PHP_URL_PORT 后，将返回一个 integer 的值）。 
+
+
+	$url = 'http://username:password@hostname/path?arg=value#anchor';
+
+	print_r(parse_url($url));
+
+	scheme - 如 http 
+	host 
+	port 
+	user 
+	pass 
+	path 
+	query - 在问号 ? 之后 
+	fragment - 在散列符号 # 之后 
+
+
+45 php://input   参考	http://www.nowamagic.net/academy/detail/12220520
+
+46 eval()  将字符当做php代码执行
+
+	val() 返回 NULL，除非在执行的代码中 return 了一个值，函数返回传递给 return 的值。 如果在执行的代码中有一个解析错误，eval() 返回 FALSE，之后的代码将正常执行。无法使用 set_error_handler() 捕获 eval() 中的解析错误。
+
+47 bool ob_start ([ callback $output_callback [, int $chunk_size [, bool $erase ]]] )
+
+	此函数将打开输出缓冲。当输出缓冲激活后，脚本将不会输出内容（除http标头外），相反需要输出的内容被存储在内部缓冲区中。 
+
+	内部缓冲区的内容可以用 ob_get_contents() 函数复制到一个字符串变量中。 想要输出存储在内部缓冲区中的内容，可以使用 ob_end_flush() 函数。另外， 使用 ob_end_clean() 函数会静默丢弃掉缓冲区的内容。 
+
+	ob的基本作用：
+	1)防止在浏览器有输出之后再使用setcookie()、header()或session_start()等发送头文件的函数造成的错误。其实这样的用法少用为好，养成良好的代码习惯。
+	2)捕捉对一些不可获取的函数的输出，比如phpinfo()会输出一大堆的HTML，但是我们无法用一个变量例如$info=phpinfo();来捕捉，这时候ob就管用了。
+	3)对输出的内容进行处理，例如进行gzip压缩，例如进行简繁转换，例如进行一些字符串替换。
+		eg   ob_start(ob_gzhandler);   回调函数 处理
+
+	4)生成静态文件，其实就是捕捉整页的输出，然后存成文件。经常在生成HTML，或者整页缓存中使用。
+
+	注意事项：
+	1、一些Web服务器的output_buffering默认是4069字符或者更大，即输出内容必须达到4069字符服务器才会flush刷新输出缓冲，为了确保flush有效，最好在ob_flush()函数前有以下语句：
+
+	复制代码 代码如下:print str_repeat("", 4096);  //以确保到达output_buffering值
+	2、ob_* 系列函数是操作PHP本身的输出缓冲区，所以ob_flush只刷新PHP自身的缓冲区，而flush是刷新apache的缓冲区。所以，正确使用俩者的顺序是：先ob_flush，然后flush。ob_flush是把数据从PHP的缓冲中释放出来，flush是把缓冲内/外的数据全部发送到浏览器。
+	3、不要误认为用了ob_start()后，脚本的echo/print等输出就永远不会显示在浏览器上了。因为PHP脚本运行结束后，会自动刷新缓冲区并输出内容。
+
+48  fopen 为移植性考虑，强烈建议在用 fopen() 打开文件时总是使用 'b' 标记
+	flock( resource $handle , int $operation[, int &$wouldblock ])
+		operation 可以是以下值之一： 
+			LOCK_SH取得共享锁定（读取的程序）。 
+			LOCK_EX 取得独占锁定（写入的程序。 
+			LOCK_UN 释放锁定（无论共享或独占）。
+	fwrite — 写入文件（可安全用于二进制文件） 返回写入的字符数，出现错误时则返回 FALSE 。 
+
+
+49  for 循环是 PHP 中最复杂的循环结构。它的行为和 C 语言的相似。 for 循环的语法是： 
+
+	for (expr1; expr2; expr3)
+	    statement
+
+	第一个表达式（expr1）在循环开始前无条件求值（并执行）一次。 
+
+	expr2 在每次循环开始前求值。如果值为 TRUE，则继续循环，执行嵌套的循环语句。如果值为 FALSE，则终止循环。 
+
+	expr3 在每次循环之后被求值（并执行）。 
+
+	每个表达式都可以为空或包括逗号分隔的多个表达式。表达式 expr2 中，所有用逗号分隔的表达式都会计算，但只取最后一个结果。expr2 为空意味着将无限循环下去（和 C 一样，PHP 暗中认为其值为 TRUE）。这可能不像想象中那样没有用，因为经常会希望用有条件的 break 语句来结束循环而不是用 for 的表达式真值判断。 
+50
+	round() — 对浮点数进行四舍五入
+	ceil() - 进一法取整
+	floor() - 舍去法取整
+	number_format(float $number , int $decimals = 0 , string $dec_point = "." , string $thousands_sep = "," ) - 以千位分隔符方式格式化一个数字
+	如果只提供第一个参数，number的小数部分会被去掉 并且每个千位分隔符都是英文小写逗号"," 
+	如果提供两个参数，number将保留小数点后的位数到你设定的值，其余同楼上 
+	如果提供了四个参数，number 将保留decimals个长度的小数部分, 小数点被替换为dec_point，千位分隔符替换为thousands_sep 
+
+
+51  memory_get_usage() — 返回分配给 PHP 的内存量
+	memory_get_peak_usage() - 返回分配给 PHP 内存的峰值
+
+52  了解 压缩方法  
+ 	gzencode()   
+ 	ob_gzhandler()   
+
+ 	需要zlib 扩展
+
+ 	CI 在处理 非缓存内容时 调用 ob_start('ob_gzhandler') 压缩
+ 	          缓存文件  调用 gzencode() 方法 压缩文件 写入文件 
+
+
+53 callback 回调类型
+
+	一个 PHP 的函数以 string 类型传递其名称。可以使用任何内置或用户自定义函数，但除了语言结构例如：array()，echo，empty()，eval()，exit()，isset()，list()，print 或 unset()。 
+
+	一个已实例化的对象的方法被作为数组传递，下标 0 包含该对象，下标 1 包含方法名。 
+
+	静态类方法也可不经实例化该类的对象而传递，只要在下标 0 中包含类名而不是对象。自 PHP 5.2.3 起，也可以传递 'ClassName::methodName'。 
+
+	除了普通的用户自定义函数外，create_function() 可以用来创建一个匿名回调函数。自 PHP 5.3.0 起也可传递 closure 给回调参数。 
+
+
+	// An example callback function
+	function my_callback_function() {
+	    echo 'hello world!';
+	}
+
+	// An example callback method
+	class MyClass {
+	    static function myCallbackMethod() {
+	        echo 'Hello World!';
+	    }
+	}
+
+	// Type 1: Simple callback
+	call_user_func('my_callback_function'); 
+
+	// Type 2: Static class method call
+	call_user_func(array('MyClass', 'myCallbackMethod')); 
+
+	// Type 3: Object method call
+	$obj = new MyClass();
+	call_user_func(array($obj, 'myCallbackMethod'));
+
+	// Type 4: Static class method call (As of PHP 5.2.3)
+	call_user_func('MyClass::myCallbackMethod');
+
+	// Type 5: Relative static class method call (As of PHP 5.3.0)
+	class A {
+	    public static function who() {
+	        echo "A\n";
+	    }
+	}
+
+	class B extends A {
+	    public static function who() {
+	        echo "B\n";
+	    }
+	}
+
+	call_user_func(array('B', 'parent::who')); // A
+
+54 
+   
+   session_id() 返回当前会话ID。 如果当前没有会话，则返回空字符串（""）。 
+
+   session_regenerate_id([ bool $delete_old_session = false ] ) 在不修改当前会话中数据的前提下使用新的 ID 替换原有会话 ID。 
+
+   delete_old_session是否删除原 ID 所关联的会话存储文件。 
+
+
+
+
+思想
+1 低版本实用高版本函数兼容
+2 多开发环境下的配置文件
+3 CI的directory 设置时 set_directory 可设置 追加模式 append 多集目录
+4 
+  REQUEST_URI模式下
+  CI 的 directory 设置时  controller 目录下 不允许出现 目录名 开头的控制器 否则默认加载该控制器 
+  eg   admin/welcome/index   默认加载admin控制器下的welcome方法  如果不存在admin控制器 才会去admin目录下 加载welcome控制器
+5 同一个uri可根据 get/post/cli 设置不同的路由规则
+eg //REQUEST_METHOD 自定义转发
+$route['welcome/myadd']['get']='welcome/routeget';
+$route['welcome/myadd']['post']='welcome/routepost';
+6 method 不允许 _ 开始 ，不允许 重写 CI_Controller的方法
+7 类 重复加载 不会造成资源浪费   类一旦被加载 就会放入已加载的 静态数组里  重复加载 从数组取 直接返回
+8 Object->a()->b()->c() 无限次调用
+  a/b/c 方法 均返回 $this
+
+9 this->load->library('Test')
+   检查Test 库 是否是system 下的库 
+        是-> 判断是否存在 application/library/test 
+				存在 -> 类名是 MY_ 开头 还是 CI_ 开头 
+						MY_ 同时加载两个库文件   无限制是否继承 CI_  
+						CI_ 直接加载调用
+				不存在->加载system/library/test
+		否-> 判断是否存在 application/library/test 
+		        存在 -> 加载
+				不存在->尝试 寻找 是否存在 application/library/test/test 或 system/library/test/test  
+							->存在 -> 当作普通类库处理
+							->不存在->不存在 error:Unable to load the requested class
+
+10 db 类   支持 url 方式配置连接   driver://username:password@hostname/path?key1=>val1
+   如果key1 等于 host /username 会覆盖url里的参数
+
+11 hook 钩子
+   可以配置 钩子执行的 class/function/filename/filepath/params
+
+12 CI的基本流程
+
+	Index.php是前端控制器，初始化框架所需的所有资源，加载应用程序基本配置，接收所有用户的请求，并通过Route路由用户请求若缓存文件存在，它将绕过通常的执行顺序，直接发送到客户端。Security数据过滤。这位于应用程序控制器装载之前。应用程序控制器加载数据库驱动、类库、业务逻辑类和可能的其他资源，处理用开启
+客户端。如果开启缓存，则视图会被缓存，用于之后的请求。
+
+13 在开启csrf 保护时 会拒绝第一次请求为POST时 
+ 理论上 POST提交 都是建立在 Form表单 发起的场景下 此时 会在cookie 设置一个token 同时 表单帮助函数 会自动生成 隐藏域 也可手动设置隐藏域 设置csrf token  提交表单时会验证两个token 这种防止了 直接发起post 请求
+
+14 $this->input->get(mixed $key);  $key 可以为数组 也可以为字符  也可取多维数组
+
+	?a=b&b=1&c[]=33&c[]=44&d[a3][a4]=35
+
+	$this->input->get('d[a3]');
+	$this->input->get('d');
+
+15 CI 每个类 可以设置自己的 输出方法   _output()
+
+16  //开启性能剖析	
+	$this->output->enable_profiler(true);
+
+	//开启缓存
+	$this->output->cache(10);
+	  
